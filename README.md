@@ -8,3 +8,4 @@
 ## SFTP
 * routing/FW
 * WinSCP/putty
+* https://mag.osdn.jp/10/04/20/1033216
