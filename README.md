@@ -51,3 +51,10 @@
     
     DNS：xxx.xxx.xxx.xxx ←外向けDNS
 
+
+## Performance
+* 要求性能、予算
+* NFS(NAS)
+* FC-SAN
+* IP-SAN(iSCIS + HBA)
+* IP-SAN+(IP-SAN + GFS)
