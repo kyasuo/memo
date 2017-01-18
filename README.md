@@ -58,3 +58,7 @@
 * FC-SAN
 * IP-SAN(iSCIS + HBA)
 * IP-SAN+(IP-SAN + GFS)
+
+## JX
+* [specification](http://www.dsri.jp/ryutsu-bms/standard/standard04.html)
+
