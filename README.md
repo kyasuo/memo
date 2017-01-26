@@ -62,3 +62,23 @@
 ## JX
 * [specification](http://www.dsri.jp/ryutsu-bms/standard/standard04.html)
 
+## JS
+```js
+		function saveTextToFile(text, contentType, fileName) {
+			var blob = new Blob([ text ], {
+				type : contentType
+			});
+			if (window.navigator.msSaveBlob) {
+				window.navigator.msSaveBlob(blob, fileName);
+			} else {
+				var href = URL.createObjectURL(blob);
+				var a = document.createElement("a");
+				a.href = href;
+				a.target = '_blank';
+				a.download = fileName;
+				a.click();
+				URL.revokeObjectURL(href);
+			}
+		}
+```
+
