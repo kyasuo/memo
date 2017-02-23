@@ -1,0 +1,30 @@
+## req
+Content-Type: multipart/related; type="application/xop+xml"; start="<rootpart@soapui.org>"; start-info="application/soap+xml"; action=""; boundary="----=_Part_1_1430059245.1487881922902"
+
+## res
+Content-Type: multipart/related; type="application/xop+xml"; boundary="uuid:8a94820c-d7f8-4b28-ae8f-7eab627b59f8";start="<root.message@cxf.apache.org>"; start-info="application/soap+xml";charset=UTF-8
+
+--uuid:95c06559-179d-4d81-895d-746f15f6cbf0
+Content-Type: application/xop+xml; charset=UTF-8; type="application/soap+xml"
+Content-Transfer-Encoding: binary
+Content-ID: <root.message@cxf.apache.org>
+
+<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:XXX="http://example.com/todo">
+  <soap:Body>
+    <XXX:uploadFileResponse>
+      <uploadFileResult>
+      <data>
+        <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:04ab5f28-5e7b-4105-a789-90e1ed416659-1@cxf.apache.org"/>
+      </data>
+     </uploadFileResult>
+    </XXX:uploadFileResponse>
+   </soap:Body>
+</soap:Envelope>
+
+--uuid:8a94820c-d7f8-4b28-ae8f-7eab627b59f8
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: binary
+Content-ID: <04ab5f28-5e7b-4105-a789-90e1ed416659-1@cxf.apache.org>
+Content-Disposition: attachment;name="XXXXXXXX"
+
+--uuid:8a94820c-d7f8-4b28-ae8f-7eab627b59f8--
