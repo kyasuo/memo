@@ -1,5 +1,7 @@
 # memo
 
+# Win10
+* http://www.softantenna.com/wp/tips/windows-10-creators-update-iso/
 
 ## ESXi
 * http://d.hatena.ne.jp/kitashu/20120303
