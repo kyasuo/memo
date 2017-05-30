@@ -1,3 +1,5 @@
+* http://browser.hatenablog.com/entry/2015/08/03/161414
+
 ```Javascript
 var elem = document.getElementsByTagName('left')[0]
 var style = elem.currentStyle || document.defaultView.getComputedStyle(elem, '')
