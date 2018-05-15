@@ -1,0 +1,53 @@
+
+	private static void parseXml(File xml, File des) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		Document readDoc = documentBuilder.parse(xml);
+		Document writeDoc = documentBuilder.parse(des);
+
+		Node mapper = readDoc.getDocumentElement();
+		String namespace = mapper.getAttributes().getNamedItem("namespace").getNodeValue();
+
+		NodeList children = mapper.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			Node child = children.item(i);
+			Node dup = writeDoc.importNode(child, true);
+			writeDoc.getDocumentElement().appendChild(dup);
+		}
+
+		write(des, writeDoc);
+
+	}
+
+	private static void mergeDocuments(Document origin, Document target) {
+		NodeList children = target.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			Node child = children.item(i);
+			Node dup = origin.importNode(child, true);
+			origin.getDocumentElement().appendChild(dup);
+		}
+	}
+
+	private static boolean write(File outputFile, Document outputDocument) {
+
+		Transformer transformer = null;
+		try {
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			transformer = transformerFactory.newTransformer();
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		transformer.setOutputProperty("indent", "yes");
+		transformer.setOutputProperty("encoding", "UTF-8");
+
+		try {
+			transformer.transform(new DOMSource(outputDocument), new StreamResult(outputFile));
+		} catch (TransformerException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
