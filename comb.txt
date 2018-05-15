@@ -1,26 +1,50 @@
 
-	private static void parseXml(File xml, File des) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-		Document readDoc = documentBuilder.parse(xml);
-		Document writeDoc = documentBuilder.parse(des);
+	static final ResourceBundle RB;
+	static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
-		Node mapper = readDoc.getDocumentElement();
-		String namespace = mapper.getAttributes().getNamedItem("namespace").getNodeValue();
+	static {
+		RB = ResourceBundle.getBundle("app");
+	}
+	static final Map<String, Document> cache = new HashMap<String, Document>();
 
-		NodeList children = mapper.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-			Node dup = writeDoc.importNode(child, true);
-			writeDoc.getDocumentElement().appendChild(dup);
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+
+		File src = new File(RB.getString("source.dir"));
+		File des = new File(RB.getString("destination.dir"));
+
+		for (File xml : FileUtils.listFiles(src, new String[] { "xml" }, true)) {
+			Document xmlDocument = parseXml(xml);
+			String namespace = xmlDocument.getDocumentElement().getAttributes().getNamedItem("namespace")
+					.getNodeValue();
+			if (cache.containsKey(namespace)) {
+				mergeDocuments(cache.get(namespace), xmlDocument);
+			} else {
+				cache.put(namespace, xmlDocument);
+			}
 		}
 
-		write(des, writeDoc);
+		for (Entry<String, Document> e : cache.entrySet()) {
+			File outputFile = makeOutputFile(des, e.getKey());
+			write(outputFile, e.getValue());
+		}
+	}
 
+	private static File makeOutputFile(File parent, String namespace) throws IOException {
+		File outputFile = new File(parent, namespace.replace(".", File.separator) + RB.getString("suffix.xml"));
+		if (!outputFile.getParentFile().exists()) {
+			outputFile.getParentFile().mkdirs();
+		}
+		outputFile.createNewFile();
+		return outputFile;
+	}
+
+	private static Document parseXml(File xml) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		return documentBuilder.parse(xml);
 	}
 
 	private static void mergeDocuments(Document origin, Document target) {
-		NodeList children = target.getChildNodes();
+		NodeList children = target.getDocumentElement().getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node child = children.item(i);
 			Node dup = origin.importNode(child, true);
