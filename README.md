@@ -83,4 +83,9 @@
 			}
 		}
 ```
+## JAXWS
+* http://cxf.apache.org/schemas/jaxws.xsd
+* inFaultInterceptors/outFaultInterceptors
+
+* https://stackoverflow.com/questions/10064191/error-handling-with-cxf-interceptors-changing-the-response-message
 
