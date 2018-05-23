@@ -89,3 +89,10 @@
 
 * https://stackoverflow.com/questions/10064191/error-handling-with-cxf-interceptors-changing-the-response-message
 
+```
+  System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "true");
+  System.setProperty("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump", "true");
+  System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
+  System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
+```
+
