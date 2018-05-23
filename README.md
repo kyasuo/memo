@@ -95,9 +95,18 @@
   System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
   System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
 ```
-common-logging
+
+java.util.loggin
 ```
 handlers = java.util.logging.FileHandler
+
+# default file output is in user's home directory.
+java.util.logging.FileHandler.pattern = %h/java%u.log
+java.util.logging.FileHandler.limit = 50000
+java.util.logging.FileHandler.count = 1
+java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
+java.util.logging.SimpleFormatter.format=%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$s [%3$s] %5$s (%2$s) %6$s%n
+
 com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.level = FINER
 ```
 
