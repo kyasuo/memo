@@ -1,0 +1,28 @@
+[Bean-def.xml]
+xmlns:aop="http://www.springframework.org/schema/aop"
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+
+<aop:aspectj-autoproxy />
+
+[Java]
+@Aspect
+@Component
+public class AspectTest {
+
+	/**
+	 * Before advice for {@link JobRequestPollTask#poll()}<br>
+	 * 
+	 * @param joinPoint
+	 * @throws Throwable
+	 */
+	@SuppressWarnings("unchecked")
+	@Before("execution(* org.terasoluna.batch.async.db.JobRequestPollTask.poll())")
+	public void beforePoll(JoinPoint joinPoint) throws Throwable {
+		Field field = JobRequestPollTask.class.getDeclaredField("pollingQueryParams");
+		field.setAccessible(true);
+		Map<String, Object> pollingQueryParams = (Map<String, Object>) ReflectionUtils.getField(field,
+				joinPoint.getTarget());
+		// pollingQueryParams.put(xxx, xxx);
+	}
+
+}
