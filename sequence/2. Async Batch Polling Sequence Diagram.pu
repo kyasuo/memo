@@ -1,0 +1,103 @@
+@startuml
+' configuration
+autonumber
+hide footbox
+skinparam {
+  defaultFontName Ricty Diminished
+}
+
+' title
+title ==<Async Batch Polling Sequence Diagram>==
+
+' classifier
+control Hinemos <<JobScheduler>> #ffffff
+participant "AsyncBatchDaemon" as AsyncBatchDaemon <<TERASOLUNA>> #ffffff
+collections "async-batch-daemon.xml" as bean.xml <<Bean def.>> #ff99ff
+participant TaskScheduler <<Spring Batch>> #ffffff
+participant JobRequestPollTask <<TERASOLUNA>> #ffffff
+participant ThreadPoolTaskExecutor <<Spring Batch>> #ffffff
+participant SimpleJobOperator <<ext. Spring Batch>> #ff99ff
+participant SimpleJobLauncher <<Spring Batch>> #ffffff
+participant SimpleJob <<Spring Batch>> #ffffff
+participant BatchJobRequestRepository <<ext. TERASOLUNA>> #ff99ff
+participant SqlSessionInterceptor <<imp. MyBatis>> #ff99ff
+database "XXX table" <<PostgreSQL>> #ffffff
+note over BatchJobRequestRepository #ff8888
+  [POINT]
+  To change SQL statement
+  to project's own
+end note
+
+' Sequence
+Hinemos -> AsyncBatchDaemon : launch
+activate AsyncBatchDaemon
+AsyncBatchDaemon -> "bean.xml" : load
+activate BatchJobRequestRepository
+AsyncBatchDaemon -> TaskScheduler : launch
+activate TaskScheduler
+TaskScheduler -> JobRequestPollTask : schedule
+== polling section ==
+activate JobRequestPollTask
+group polling
+JobRequestPollTask -> BatchJobRequestRepository : find
+BatchJobRequestRepository -> SqlSessionInterceptor : select
+activate SqlSessionInterceptor
+SqlSessionInterceptor -> SqlSessionInterceptor : adjust queryParams
+note left #ff8888
+  [POINT]
+  To modify queryParams
+  ex.) add project's own datetime
+end note
+SqlSessionInterceptor -> "XXX table" : select (queryParams)
+BatchJobRequestRepository <-- "XXX table" : query result
+JobRequestPollTask <-- BatchJobRequestRepository : return "List<BatchJobRequest>"
+|||
+loop
+  JobRequestPollTask ->> ThreadPoolTaskExecutor : execute
+  activate ThreadPoolTaskExecutor
+  group asynchronous
+    ThreadPoolTaskExecutor -> BatchJobRequestRepository : updateStatus (status: INIT-->POLLED)
+    BatchJobRequestRepository -> SqlSessionInterceptor : update
+    SqlSessionInterceptor -> SqlSessionInterceptor : adjust updateParams
+    note left #ff8888
+      [POINT]
+      To modify updateParams
+      ex.) convert PollingStatus to project's own value
+    end note
+    SqlSessionInterceptor -> "XXX table" : update (updateParams)
+    ThreadPoolTaskExecutor -> SimpleJobOperator : start
+    activate SimpleJobOperator
+    SimpleJobOperator -> SimpleJobOperator : transform jobParameters
+    note left #ff8888
+     [POINT]
+     To transform jobParameters format
+     from csv to property(key=value)
+    end note
+    SimpleJobOperator -> SimpleJobLauncher : run (jobParameters)
+    activate SimpleJobLauncher
+    group reference to "Job Sequence Diagram"
+      SimpleJobLauncher -> SimpleJob : execute
+      activate SimpleJob
+      deactivate SimpleJob
+    end
+    SimpleJobOperator <-- SimpleJobLauncher : return "jobExecution"
+    deactivate SimpleJobLauncher
+    ThreadPoolTaskExecutor <-- SimpleJobOperator : return "jobExecutionId"
+    deactivate SimpleJobOperator
+    ThreadPoolTaskExecutor -> BatchJobRequestRepository : updateStatus (status: POLLED-->EXECUTED)
+    BatchJobRequestRepository -> SqlSessionInterceptor : update
+    SqlSessionInterceptor -> SqlSessionInterceptor : adjust updateParams
+    note left #ff8888
+      [POINT]
+      To modify updateParams
+      ex.) convert PollingStatus to project's own value
+      ex.) convert exitCode to project's own value
+    end note
+    SqlSessionInterceptor -> "XXX table" : update (updateParams)
+    deactivate SqlSessionInterceptor
+    |||
+  end
+  |||
+end
+== polling section ==
+@enduml

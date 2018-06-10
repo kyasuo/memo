@@ -1,0 +1,38 @@
+@startuml
+' configuration
+autonumber
+hide footbox
+skinparam {
+  defaultFontName Ricty Diminished
+}
+
+' title
+title ==<Sync Batch Sequence Diagram>==
+
+' classifier
+control Hinemos <<JobScheduler>> #ffffff
+participant "CommandLineJobRunner" as CommandLineJobRunner <<Spring Batch>> #ffffff
+collections "XXXXXX.xml" as bean.xml <<Bean def.>> #ff99ff
+participant SimpleJobLauncher <<Spring Batch>> #ffffff
+participant SimpleJob <<Spring Batch>> #ffffff
+
+' Sequence
+Hinemos -> CommandLineJobRunner : launch
+activate CommandLineJobRunner
+CommandLineJobRunner -> CommandLineJobRunner : start
+CommandLineJobRunner -> "bean.xml" : load
+CommandLineJobRunner -> SimpleJobLauncher : run (jobParameters)
+note left #ff8888
+  [POINT]
+  jobParameters format must be property(key=value)
+end note
+activate SimpleJobLauncher
+group reference to "Job Sequence Diagram"
+  SimpleJobLauncher -> SimpleJob : execute
+  activate SimpleJob
+  deactivate SimpleJob
+end
+CommandLineJobRunner <-- SimpleJobLauncher : return "jobExecution"
+deactivate SimpleJobLauncher
+Hinemos <-- CommandLineJobRunner : return exitCode
+@enduml

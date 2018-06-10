@@ -1,0 +1,102 @@
+@startuml
+' configuration
+autonumber
+hide footbox
+skinparam {
+  defaultFontName Ricty Diminished
+}
+
+' title
+title ==<Job Sequence Diagram>==
+
+' classifier
+participant "SimpleJobLauncher" <<Spring Batch>> #ffffff
+participant "SimpleJob" <<Spring Batch>> #ffffff
+participant JobExecutionListener <<Spring Batch>> #ff99ff
+participant SimpleStepHandler <<Spring Batch>> #ffffff
+participant TaskletStep <<Spring Batch>> #ffffff
+participant StepExecutionListener <<Spring Batch>> #ff99ff
+participant PreLogic as PreLogic <<Tasklet>> #99ff99
+participant BLogic as BLogic <<Tasklet>> #99ff99
+participant Chunk as Chunk <<Tasklet>> #ff99ff
+participant Collector as Reader <<ItemReader>> #99ff99
+participant BLogic as Writer <<ItemWriter>> #99ff99
+participant PostLogic as PostLogic <<Tasklet>> #99ff99
+
+' Sequence
+SimpleJobLauncher -> SimpleJob : execute
+activate SimpleJob
+SimpleJob -> JobExecutionListener : beforeJob
+activate JobExecutionListener
+
+loop step loop
+  group 1st Step (PreLogic)
+    SimpleJob -> SimpleStepHandler : handleStep
+    activate SimpleStepHandler
+    SimpleStepHandler -> TaskletStep : execute
+    activate TaskletStep
+    TaskletStep -> StepExecutionListener : beforeStep
+    TaskletStep -> PreLogic : execute
+    activate PreLogic
+    TaskletStep <-- PreLogic : return "RepeatStatus.FINISHED"
+    deactivate PreLogic
+    TaskletStep -> StepExecutionListener : afterStep
+    deactivate TaskletStep
+  end group
+  group 2nd Step (BLogic)
+    SimpleJob -> SimpleStepHandler : handleStep
+    activate SimpleStepHandler
+    SimpleStepHandler -> TaskletStep : execute
+    activate TaskletStep
+    TaskletStep -> StepExecutionListener : beforeStep
+    opt Tasklet Model
+    == Start Transaction for Tasklet ==
+      TaskletStep -> BLogic : execute
+      activate BLogic
+      TaskletStep <-- BLogic : return "RepeatStatus.FINISHED"
+      deactivate BLogic
+      == End Transaction for Tasklet ==
+    end opt
+    opt Chunk Model
+      TaskletStep -> Chunk : execute
+      activate Chunk
+      Chunk -> Reader : open
+      activate Reader
+      loop collect data until chunk size or until data is null
+        Chunk -> Reader : read
+        Chunk <-- Reader : return "chunk data"
+      end loop
+      alt chunk data list is not empty
+        == Start Transaction for Chunk ==
+        Chunk -> Writer : write (chunk data list)
+        activate Writer
+        deactivate Writer
+        == End Transaction for Chunk ==
+        deactivate Reader
+      end alt
+      TaskletStep <-- Chunk : return "RepeatStatus.FINISHED"
+      deactivate Chunk
+    end opt
+    TaskletStep -> StepExecutionListener : afterStep
+    deactivate TaskletStep
+  end group
+  group 3rd Step (PostLogic)
+    SimpleJob -> SimpleStepHandler : handleStep
+    activate SimpleStepHandler
+    SimpleStepHandler -> TaskletStep : execute
+    activate TaskletStep
+    TaskletStep -> StepExecutionListener : beforeStep
+    TaskletStep -> PostLogic : execute
+    activate PostLogic
+    TaskletStep <-- PostLogic : return "RepeatStatus.FINISHED"
+    deactivate PostLogic
+    TaskletStep -> StepExecutionListener : afterStep
+    deactivate TaskletStep
+  end group
+end loop
+
+SimpleJob -> JobExecutionListener : afterJob
+deactivate JobExecutionListener
+
+
+@enduml
