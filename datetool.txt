@@ -1,0 +1,75 @@
+public class DateTool {
+
+	static final String FIRST_DATE = "20180101";
+	static final String LAST_DATE = "20191231";
+	static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("uuuuMMdd", Locale.JAPANESE);
+
+	static final String[] HOLIDAY_FILES = { "public_holiday/syukujitsu_kyujitsu.csv" };
+	static final Charset CSV_CHARSET = Charset.forName("ms932");
+	static final Pattern HOLIDAY_PTN = Pattern.compile("^(\\d+?)-(\\d+?)-(\\d+?),(.+)$");
+
+	static final Map<String, String> HOLIDAYS = new TreeMap<String, String>();
+	static {
+		// load holidays from files
+		try {
+			Matcher matcher;
+			for (String file : HOLIDAY_FILES) {
+				for (String line : Files.readAllLines(Paths.get(DateTool.class.getResource(file).toURI()),
+						CSV_CHARSET)) {
+					matcher = HOLIDAY_PTN.matcher(line);
+					if (matcher.find()) {
+						HOLIDAYS.put(matcher.group(1) + matcher.group(2) + matcher.group(3), matcher.group(4));
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
+	public static void main(String[] args) {
+		LocalDate date = LocalDate.parse(FIRST_DATE, DATE_FORMATTER).minusDays(1);
+		LocalDate last = LocalDate.parse(LAST_DATE, DATE_FORMATTER);
+		while (date.isBefore(last)) {
+			date = date.plusDays(1);
+			String ymd = date.format(DATE_FORMATTER);
+			DayOfWeek dow = date.getDayOfWeek();
+			String bsd = deriveBusinessDay(date).getValue();
+			System.out.println(ymd + "," + dow.get(WeekFields.SUNDAY_START.dayOfWeek()) + "," + bsd);
+		}
+	}
+
+	static BusinessDay deriveBusinessDay(LocalDate date) {
+		DayOfWeek dow = date.getDayOfWeek();
+		if (DayOfWeek.SUNDAY.equals(dow) || DayOfWeek.SATURDAY.equals(dow)) {
+			return BusinessDay.NON;
+		}
+
+		String ymd = date.format(DATE_FORMATTER);
+		if (HOLIDAYS.containsKey(ymd)) {
+			return BusinessDay.NON;
+		}
+
+		if (date.equals(LocalDate.of(date.getYear(), date.getMonth(), 1)
+				.with(TemporalAdjusters.dayOfWeekInMonth(3, DayOfWeek.MONDAY)))) {
+			return BusinessDay.NON;
+		}
+
+		return BusinessDay.ON;
+	}
+
+	enum BusinessDay {
+		ON("0"), NON("1");
+		String value;
+
+		private BusinessDay(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return this.value;
+		}
+	}
+
+}
