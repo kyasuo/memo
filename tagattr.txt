@@ -1,0 +1,48 @@
+	public static String adjustTagAttributes(String tagString) {
+
+		List<String> srcList = new ArrayList<String>(Arrays.asList(tagString.split("")));
+		StringBuilder result = new StringBuilder();
+		String current;
+		String next;
+		String prev;
+		String enclosure = "";
+		boolean enclosed = false;
+		for (int idx = 0; idx < srcList.size(); idx++) {
+			current = srcList.get(idx);
+			result.append(current);
+			if ("=".equals(current)) {
+				if (!enclosed) {
+					next = get(srcList, idx + 1);
+					if ("\"".equals(next) || "'".equals(next)) {
+						enclosure = next;
+						enclosed = true;
+						result.append(next);
+						idx++;
+					} else {
+						System.err.println("warning: the next of '=' is expected to '\"' or ''', but " + next + ".");
+					}
+				}
+			} else if (current.equals(enclosure)) {
+				if (enclosed) {
+					prev = get(srcList, idx - 1);
+					if (!"\\".equals(prev)) {
+						next = get(srcList, idx + 1);
+						if (!" ".equals(next)) {
+							result.append(" ");
+						}
+						enclosure = "";
+						enclosed = false;
+					}
+				}
+			}
+		}
+		return result.toString();
+	}
+
+	private static <E> E get(List<E> target, int index) {
+		if (index < target.size()) {
+			return target.get(index);
+		} else {
+			return null;
+		}
+	}
