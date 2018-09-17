@@ -1,0 +1,6 @@
+#set ($downloadList = [
+    "dl01",
+    "dl02",
+    "dl03"
+])
+

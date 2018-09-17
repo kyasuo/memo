@@ -1,0 +1,23 @@
+#parse("downloadList.json")
+#parse("forwardMap.json")
+
+@RequestMapping(value="${path}")
+public String controller() {
+    
+    #if($forwardMap.containsKey($path))
+        Map<String, String> forwardMap = new HashMap<String, String>();
+        #foreach ($forward in $forwardMap.get($path).entrySet())
+        forwardMap.put("$forward.key", "$forward.value");
+        #end
+        model.add("forwardMap", forwardMap);
+    #end
+
+    #if($downloadList.contains($path))
+        return "downloadView";
+    #elseif($path.endsWith("FINISH"))
+        #set($forwardKey = $path.replaceAll(".+/(.+)-.+", "$1"))
+        return forwardMap.get("$forwardKey");
+    #else
+        return "${path}";
+    #end
+}
