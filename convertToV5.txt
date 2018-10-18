@@ -1,0 +1,37 @@
+  static final String SRC_DIR = "";
+  static final String ENCODING = "UTF-8";
+  static final String TAGET_FILE_REGEX = "^.+\\.[a-z]{4}[0-9]{3}\\.web\\.(form|bean)\\..+$";
+
+	private static void convertToV5() throws IOException {
+		final List<String> lines = new ArrayList<String>();
+		for (File src : FileUtils.listFiles(SRC_DIR, new String[] { "java" }, true)) {
+			if (!src.getAbsolutePath().replace(File.separator, ".").matches(TAGET_FILE_REGEX)) {
+				continue;
+			}
+			final File dest = new File(src.getParentFile(), "v5_" + src.getName());
+			for (String line : FileUtils.readLines(src, ENCODING)) {
+				if (line.startsWith("import org.apache.commons.lang.")) {
+					// replace line
+					lines.add(line.replace("import org.apache.commons.lang.", "import org.apache.commons.lang3."));
+				} else if (line.startsWith("import jp.terasoluna.fw.web.struts.form.ValidatorActionFormEx")) {
+					// replace line
+					lines.add(line.replace("import jp.terasoluna.fw.web.struts.form.ValidatorActionFormEx",
+					        "import xx.xx.NNNNN"));
+				} else if (line.startsWith("import jp.terasoluna.fw.web.codelist.CodeBean")) {
+					// remove line
+					lines.add("");
+				} else if (line.contains(" extends ValidatorActionFormEx")) {
+					// replace phrase of "extends"
+					lines.add(line.replace(" extends ValidatorActionFormEx", " extends NNNNN"));
+				} else if (line.contains(" extends CodeBean")) {
+					// remove phrase of "extends"
+					lines.add(line.replace(" extends CodeBean", ""));
+				} else {
+					// copy line
+					lines.add(line);
+				}
+			}
+			FileUtils.writeLines(dest, ENCODING, lines);
+			lines.clear();
+		}
+	}
