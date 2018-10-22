@@ -2,10 +2,10 @@ package explorer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,11 +18,17 @@ public class SqlAnalyzer {
 
 	static final File BASE_DIR = new File("");
 
+	static final String SEPARATOR = ",";
+
+	static final Pattern SEQUENCE = Pattern.compile("^.+\\.NEXTVAL\\b.+$", Pattern.CASE_INSENSITIVE + Pattern.DOTALL);
+
+	static final Pattern ROWNUM = Pattern.compile("^.+\\bROWNUM\\b.+$", Pattern.CASE_INSENSITIVE + Pattern.DOTALL);
+
 	public static void main(String[] args) throws DocumentException {
 
 		// parse
 		final SAXReader reader = new SAXReader();
-		final Map<String, SqlInfo> sqlMapInfo = new TreeMap<String, SqlInfo>();
+		final Map<String, SqlInfo> sqlMapInfo = new LinkedHashMap<String, SqlInfo>();
 		for (File xml : FileUtils.listFiles(BASE_DIR, new String[] { "xml" }, true)) {
 			final String fileName = xml.getName();
 			if (!fileName.endsWith("_sqlMap.xml")) {
@@ -30,30 +36,34 @@ public class SqlAnalyzer {
 			}
 			for (Node node : reader.read(xml).selectNodes("/sqlMap/*[@id!='']")) {
 				Element element = (Element) node;
-				SqlInfo sqlInfo = new SqlInfo(fileName);
+				SqlInfo sqlInfo = new SqlInfo(xml);
 				sqlMapInfo.put(element.attributeValue("id"), sqlInfo);
+				String sql = element.getTextTrim();
 				// search keywords
+				sqlInfo.setSequence(SEQUENCE.matcher(sql).find());
+				sqlInfo.setRownum(ROWNUM.matcher(sql).find());
 			}
 		}
 
 		// output
-		List<String> lines = new ArrayList<String>();
-		for (Entry<String, SqlInfo> e : sqlMapInfo.entrySet()) {
-			String sqlId = e.getKey();
-			SqlInfo info = e.getValue();
-			lines.add(StringUtils.join(new Object[] { info.getFileName(), sqlId, info.isSequence(), info.isRownum() },
-			        ","));
+		final List<String> lines = new ArrayList<String>();
+		lines.add(StringUtils.join(new Object[] { "FileName", "FilePath", "SQLID", "SEQUENCE", "ROWNUM" }, SEPARATOR));
+		for (String sqlId : sqlMapInfo.keySet()) {
+			SqlInfo info = sqlMapInfo.get(sqlId);
+			lines.add(StringUtils.join(new Object[] { info.getFile().getName(), info.getFile().getAbsolutePath(), sqlId,
+			        info.isSequence(), info.isRownum() }, SEPARATOR));
 		}
+		// FIXME write to file
 		System.out.println(StringUtils.join(lines, "\r\n"));
 	}
 
 	public static class SqlInfo {
-		private final String fileName;
+		private final File file;
 		private boolean sequence = false;
 		private boolean rownum = false;
 
-		public SqlInfo(String fileName) {
-			this.fileName = fileName;
+		public SqlInfo(File file) {
+			this.file = file;
 		}
 
 		public boolean isSequence() {
@@ -72,8 +82,8 @@ public class SqlAnalyzer {
 			this.rownum = rownum;
 		}
 
-		public String getFileName() {
-			return fileName;
+		public File getFile() {
+			return file;
 		}
 	}
 
