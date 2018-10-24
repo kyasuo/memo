@@ -1,0 +1,8 @@
+public class ResourceBundleMessageSourceEx extends ResourceBundleMessageSource {
+
+	@Override
+	protected String formatMessage(String msg, Object[] args, Locale locale) {
+		return super.formatMessage(msg, args, locale);
+	}
+
+}
