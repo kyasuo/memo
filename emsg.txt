@@ -6,3 +6,24 @@ public class ResourceBundleMessageSourceEx extends ResourceBundleMessageSource {
 	}
 
 }
+
+
+	private String[] editedFieldNames;
+
+	@Override
+	public void initialize(ISBN13 constraintAnnotation) {
+		// modify message arguments
+		editedFieldNames = Arrays.copyOf(constraintAnnotation.fieldNames(), constraintAnnotation.fieldNames().length);
+	}
+
+	@Override
+	public boolean isValid(String value, ConstraintValidatorContext context) {
+		if (value == null) {
+			return true;
+		}
+
+		// add expression variable for message arguments
+		context.unwrap(HibernateConstraintValidatorContext.class).addExpressionVariable("fieldNames", editedFieldNames);
+
+		return isISBN13Valid(value);
+	}
