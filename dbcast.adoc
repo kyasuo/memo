@@ -1,0 +1,33 @@
+
+
+[width="100%", cols="1,4,4,3"]
+|====================
+   | Data Type | DB                          | PostgreSQL        | Note   
+.2+| Character | CHARACTER /CHAR             | character /char   |   
+               | CHARACTER VARYING 
+                 /CHAR VARYING 
+                 /VARCHAR                    | character varying 
+                                               /varchar  /text   |  
+.2+| National Character 
+               | NATIONAL CHARACTER 
+                 /NATIONAL CHAR 
+                 /NCHAR                      | character /char   |   
+               | NATIONAL CHARACTER VARYING 
+                 /NATIONAL CHAR VARYING 
+                 /NCHAR VARYING              | character varying 
+                                               /varchar /text    |  
+.4+| Number    | NUMERIC                     | numeric           |    
+               | DECIMAL /DEC                | numeric           |    
+               | INTEGER /INT                | integer           |    
+               | SMALLINT                    | smallint          |    
+.3+| Round Number 
+               | FLOAT                       | double precision  |    
+               | REAL                        | real              |    
+               | DOUBLE PRECISION            | double precision  |    
+.3+| Date      | DATE                        | date              |  
+               | TIME                        | time              |  
+               | TIMESTAMP                   | timestamp         |  
+| Time Interval| INTERVAL                    | interval          |    
+| BLOB         | BINARY LARGE OBJECT/BLOB    | bytea /text *     |  * upto 
+1GB
+|====================
