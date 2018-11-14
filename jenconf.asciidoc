@@ -1,0 +1,25 @@
+= Jenkins Configuration
+
+== Manage Roles
+
+=== Global roles
+[cols="1,2a", width="100%",options="header"]
+|====================
+| Role  | Privileges             
+| admin | * [x] All               
+| user  | * [x] Entire -> Read 
+|====================
+
+=== Project roles
+[cols="1,2a,3a", width="100%",options="header"]
+|====================
+| Role    | Pattern   | Privileges             
+| JobName | JobName.* | * [x] Job -> Build 
+                        * [x] Job -> Cancel     
+                        * [x] Job -> Read     
+|====================
+
+== Assign Roles
+=== Item roles
+. User/group to add [JobName]
+. Assign role(s) to user
