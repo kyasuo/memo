@@ -23,3 +23,37 @@
 === Item roles
 . User/group to add [JobName]
 . Assign role(s) to user
+
+
+== Jenkinsfile
+```
+pipeline {
+    agent {
+        label 'master'
+    }
+    stages {
+        stage('build master'){
+            when {
+                branch 'master'
+            }
+            steps {
+                build job: 'dcom', parameters: []
+                echo 'build master'
+            }
+        }
+        stage('build release-*'){
+            when {
+                branch 'release-*'
+            }
+            steps {
+                echo 'build release'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Finish dweb'
+        }
+    }
+}
+```
