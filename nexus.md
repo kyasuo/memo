@@ -162,6 +162,32 @@
       </settings>
       ```
 
+## HTTPS
+
+1. create keystore file
+
+    ```
+    $ cd /opt/nexus/etc/ssl
+    $ keytool -keystore keystore.jks -alias jetty -genkey -keyalg RSA
+    ```
+
+1. modify jetty-https.xml
+
+    ```
+    $ vi ../jetty/jetty-https.xml
+      .
+      .
+      .
+        <Set name="KeyStorePassword">[PASSWORD]</Set>
+        <Set name="KeyManagerPassword">[PASSWORD]</Set>
+        <Set name="TrustStorePassword">[PASSWORD]</Set>
+      .
+      .
+      .
+    ```
+
+1. restart nexus 
+
 ## note
 
   * if proxy cache is failure, "proxy repostory" -> "rebuild index"
