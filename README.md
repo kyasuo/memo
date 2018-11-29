@@ -112,3 +112,6 @@ com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.level = FINER
 
 https://docs.oracle.com/javase/tutorial/jaxp/limits/limits.html
 
+## Maven
+
+* http://maven.apache.org/guides/mini/guide-attached-tests.html
