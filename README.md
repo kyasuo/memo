@@ -116,6 +116,13 @@ https://docs.oracle.com/javase/tutorial/jaxp/limits/limits.html
 
 * http://maven.apache.org/guides/mini/guide-attached-tests.html
 
+## Reporting(http://maven.apache.org/plugins/index.html)
+
+* checkstyle
+* javadoc
+* project-info-reports
+* surefire-report
+
 ## draw.io
 
 * https://github.com/jgraph/drawio
