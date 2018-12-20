@@ -33,3 +33,9 @@ reveiew tldJarNamePatterns
   </build>
   ```
  
+#### note
+
+* Apache Tomcat Versions(http://tomcat.apache.org/whichversion.html)
+
+* JSP specification 2.3(https://download.oracle.com/otndocs/jcp/jsp-2_3-mrel2-spec/)
+  tld JSP.7.3.2
