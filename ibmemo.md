@@ -72,3 +72,17 @@
 			}
 		}
 ```
+
+## binding 
+
+|TYPE | SQL | JAVA | RESULT |
+|-----|-----|------|--------|
+|I/O | l | l | OK |
+|I/O | l | u | OK |
+|I/O | u | l | __NG__ |
+|I/O | u | u | OK |
+|ATTR | l | l | OK |
+|ATTR | l | u | __NG__ |
+|ATTR | u | l | __NG__ |
+|ATTR | u | u | OK |
+
