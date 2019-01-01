@@ -86,6 +86,9 @@
 |ATTR | u | l | __NG__ |
 |ATTR | u | u | OK |
 
+* PropertyNamer#methodToProperty
+
+
 ```
 import java.io.BufferedInputStream;
 import java.io.File;
