@@ -23,6 +23,6 @@ tomcat-embed-el
 
 <html:multibox property="xxx"><bean:write name="yyy" property="zzz" /></html:multibox>
 
-<input type="checkbox" name="xxx" value="${ yyy.zzz }" <c:if test="${ xxx == yyy.zzz }"></c:if> />
+<input type="checkbox" name="xxx" value="${ yyy.zzz }" <c:if test="${ xxx == yyy.zzz }">checked="checked"</c:if> />
 
 ```
