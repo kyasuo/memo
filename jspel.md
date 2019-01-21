@@ -40,4 +40,9 @@ tomcat-embed-el
     <c:out value="${ ccc.mmm }" />
 </label>
 
+- LN
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<c:set var="beforeLine" value="\r\n"/><c:set var="afterLine" value="<br>"/> 
+${ fn:replace(target, beforeLine, afterLine) }
+
 ```
