@@ -1,3 +1,7 @@
 
+```
+- SessionAuthenticationStrategy#onAuthentication
 
-- CsrfAuthenticationStrategy
+ * CsrfAuthenticationStrategy
+ * ChangeSessionIdAuthenticationStrategy
+```
