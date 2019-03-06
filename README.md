@@ -131,3 +131,8 @@ https://docs.oracle.com/javase/tutorial/jaxp/limits/limits.html
 
 ## X-UA-Compatible
 
+* https://blogs.msdn.microsoft.com/ie_jp/2012/01/24/ie/
+* https://seopack.jp/internal-seo/basic/html4-html5-doctype.php
+* https://www.flapism.jp/html/107/
+
+
