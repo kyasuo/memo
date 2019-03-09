@@ -135,4 +135,9 @@ https://docs.oracle.com/javase/tutorial/jaxp/limits/limits.html
 * https://seopack.jp/internal-seo/basic/html4-html5-doctype.php
 * https://www.flapism.jp/html/107/
 
+## html specification
 
+* https://www.w3.org/TR/html401/
+* https://www.w3.org/TR/html5/
+
+   ** https://www.w3.org/TR/html5/syntax.html#writing-html-documents-elements
