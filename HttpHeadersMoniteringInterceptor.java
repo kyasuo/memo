@@ -44,6 +44,7 @@ public class HttpHeadersMoniteringInterceptor extends AbstractPhaseInterceptor<M
 
 	public HttpHeadersMoniteringInterceptor() {
 		super(Phase.PRE_INVOKE);
+		//super(Phase.PREPARE_SEND_ENDING); if outgoing case
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -53,6 +54,11 @@ public class HttpHeadersMoniteringInterceptor extends AbstractPhaseInterceptor<M
 		log("-- HTTP HEADERS --");
 		for (Entry<String, List<String>> header : headers.entrySet()) {
 			log("  " + header.getKey() + "=" + header.getValue() + "");
+		}
+		log("------------------");
+		log("-- Message --");
+		for(Entry<String, Object> msg : message.entrySet()) {
+			log("  " + msg.getKey() + "=" + msg.getValue() + "");
 		}
 		log("------------------");
 	}
