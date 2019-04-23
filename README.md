@@ -84,6 +84,9 @@
 		}
 ```
 ## JAXWS
+* schema-validation  
+  http://cxf.apache.org/faq.html#FAQ-HowcanIturnonschemavalidationforjaxwsendpoint?
+
 * http://cxf.apache.org/schemas/jaxws.xsd
 * inFaultInterceptors/outFaultInterceptors
 
