@@ -1,0 +1,39 @@
+
+#### CSRF
+9.5.2.1.
+```
+[spring-security.xml]
+<sec:http>
+    <!-- omitted -->
+    <sec:csrf disabled="true"/> <!-- disabled属性にtrueを設定して無効化 -->
+    <!-- omitted -->
+</sec:http>
+```
+
+#### URL Rewriting
+9.4.2.1.1.
+```
+[spring-security.xml]
+<sec:http disable-url-rewriting="false"> <!-- falseを指定してURL Rewritingを有効化 -->
+```
+9.4.2.1.2.
+```
+[web.xml]
+<session-config>
+    <tracking-mode>URL</tracking-mode>
+</session-config>
+```
+
+#### URL Rewriting
+9.4.1.1.1. NoteでSpringが提供しているJSPタグにおいてHttpServletResponse#encodeURLを呼び出すとの記載があるがaction属性を設定すると呼び出されない
+※JSTLが提供しているJSPタグは呼び出している
+
+#### セミコロン(;)
+```
+重大: サーブレット [appServlet] のServlet.service()が例外を投げました
+org.springframework.security.web.firewall.RequestRejectedException: The request was rejected because the URL contained a potentially malicious String ";"
+	at org.springframework.security.web.firewall.StrictHttpFirewall.rejectedBlacklistedUrls(StrictHttpFirewall.java:140)
+	at org.springframework.security.web.firewall.StrictHttpFirewall.getFirewalledRequest(StrictHttpFirewall.java:120)
+```
+
+
