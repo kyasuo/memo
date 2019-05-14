@@ -1,0 +1,11 @@
+
+
+* ArrayDeque  
+** https://docs.oracle.com/javase/jp/6/api/java/util/ArrayDeque.html
+** https://stackoverflow.com/questions/34851512/why-null-values-are-not-allowed-in-arraydeque/34851610
+
+```
+Queue<Optional<E>> q = new ArrayDeque<>();
+q.offer(Optional.ofNullable(null));
+q.poll().orElse(null);
+```
