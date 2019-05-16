@@ -1,0 +1,7 @@
+
+```
+cursor or cursorIterator
+ rsw: ResultSetWrapper
+  resultSet: PgResultSet
+   rows: ArrayList<E> <- size
+```
