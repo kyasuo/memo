@@ -63,3 +63,44 @@
   </dependencySets>
 </assembly>
 ```
+### snapshots
+```
+
+  <activeProfiles>
+    <activeProfile>nexus</activeProfile>
+  </activeProfiles>
+
+  <profiles>
+    <profile>
+      <id>nexus</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <repositories>
+        <repository>
+          <id>releases</id>
+          <url>http://[NEXUS]:8081/repository/xxx-releases/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>snapshots</id>
+          <url>http://[NEXUS]:8081/repository/xxx-snapshots/</url>
+          <layout>default</layout>
+            <releases>
+              <enabled>false</enabled>
+            </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+```
+
