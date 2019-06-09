@@ -346,4 +346,10 @@ var style = elem.currentStyle || document.defaultView.getComputedStyle(elem, '')
    zIndex: "auto",
    zoom: "1"
 }
+
+
+# [インターネットオプション]⇒[詳細設定]⇒[ユーザ補助]
+
+ * 新しいウィンドウとタブで、テキストを中サイズにリセットする
+ * 新しいウィンドウとタブの拡大レベルをリセット
 ```
