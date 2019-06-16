@@ -1,0 +1,105 @@
+#### SpecifiedPropertyRequired
+```
+package todo;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.validation.Constraint;
+import javax.validation.Payload;
+
+@Documented
+@Constraint(validatedBy = { SpecifiedPropertyRequiredValidator.class }) // (1)
+@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+@Retention(RUNTIME)
+public @interface SpecifiedPropertyRequired {
+
+	String message() default "required";
+
+	String props();
+
+	Class<?>[] groups() default {};
+
+	Class<? extends Payload>[] payload() default {};
+
+	/**
+	 * Defines several {@code @NotEmpty} annotations on the same element.
+	 */
+	@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+	@Retention(RUNTIME)
+	@Documented
+	public @interface List {
+		SpecifiedPropertyRequired[] value();
+	}
+
+}
+
+```
+
+
+#### SpecifiedPropertyRequiredValidator
+```
+package todo;
+
+import java.lang.reflect.Field;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
+import org.hibernate.validator.internal.engine.path.PathImpl;
+
+public class SpecifiedPropertyRequiredValidator implements ConstraintValidator<SpecifiedPropertyRequired, String> {
+
+	private final Field field;
+
+	private String props = null;
+
+	public SpecifiedPropertyRequiredValidator() {
+		try {
+			this.field = ConstraintValidatorContextImpl.class.getDeclaredField("basePath");
+			this.field.setAccessible(true);
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	@Override
+	public void initialize(SpecifiedPropertyRequired constraintAnnotation) {
+		this.props = constraintAnnotation.props();
+	}
+
+	@Override
+	public boolean isValid(String value, ConstraintValidatorContext context) {
+
+		if (StringUtils.isEmpty(this.props)) {
+			return StringUtils.isNotEmpty(value);
+		}
+
+		PathImpl basePath;
+		try {
+			basePath = (PathImpl) field.get(context);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
+
+		if (this.props.equals(basePath.asString())) {
+			return StringUtils.isNotEmpty(value);
+		} else {
+			return true;
+		}
+	}
+
+}
+
+```
+
