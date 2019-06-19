@@ -1,0 +1,6 @@
+
+#### convert
+* https://www.doraxdora.com/blog/2017/12/07/post-3384/#VBScript
+```
+Call WordApp.ActiveDocument.SaveAs2 ( tmpFilePath,10 )
+```
