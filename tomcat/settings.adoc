@@ -1,0 +1,6 @@
+
+
+#### default encoding
+```
+-Dfile.encoding=utf-8 
+```
