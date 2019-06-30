@@ -1,0 +1,5 @@
+
+* https://access.redhat.com/documentation/ja-jp/openshift_container_platform/3.9/html/developer_guide/dev-guide-application-memory-sizing
+* https://qiita.com/yoichiwo7/items/0a9550b11ac726f79485
+* https://bufferings.hatenablog.com/entry/2018/11/11/114534
+* https://yoskhdia.hatenablog.com/entry/2017/11/05/224428
