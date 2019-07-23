@@ -1,0 +1,73 @@
+
+```
+public class BeanValidationConverter {
+
+	static final String[] FILES = {};
+	static final List<String> TARGETS = Arrays.asList("NotNull");
+	static final String ENCODING = "UTF-8";
+
+	public static void main(String[] args) throws Exception {
+
+		for (String inputFile : FILES) {
+
+			// TODO parse validation.xml
+			Map<String, String> context = new HashMap<String, String>();
+			context.put("PATH01.class", "zzzz.xx.efg");
+			context.put("PATH02.class", "dddd.xx.abc");
+			
+			
+			String fileContents = FileUtils.readFileToString(new File(inputFile), ENCODING);
+			CompilationUnit cUnit = JavaParser.parse(fileContents);
+			cUnit.accept(new VoidVisitorAdapter<Map<String, String>>() {
+
+				@Override
+				public void visit(FieldDeclaration declaration, Map<String, String> context) {
+
+					if (!declaration.isStatic()) {
+						for (AnnotationExpr a : declaration.getAnnotations()) {
+							if (!a.isSingleMemberAnnotationExpr()) {
+								continue;
+							}
+							SingleMemberAnnotationExpr sa = (SingleMemberAnnotationExpr) a
+							        .asSingleMemberAnnotationExpr();
+							if (!sa.getMemberValue().isArrayInitializerExpr()) {
+								continue;
+							}
+							// TODO filter by annotation name
+							// TODO convert annotion name to depends
+							String depends = null;
+							ArrayInitializerExpr ai = (ArrayInitializerExpr) sa.getMemberValue();
+							for (Object v : ai.getValues()) {
+								NormalAnnotationExpr n = (NormalAnnotationExpr) v;
+								String path = null;
+								String fullPath = null;
+								for (MemberValuePair p : n.getPairs()) {
+									String name = p.getNameAsString();
+									if ("groups".equals(name)) {
+										path = context.get(p.getValue().toString().replace("{","").replace("}", "").trim());
+									} else if ("fullPath".equals(name)) {
+										fullPath = p.getValue().asStringLiteralExpr().asString();
+										break;
+									}
+								}
+								if (StringUtils.equals(path, fullPath)) {
+									continue;
+								}
+								n.addPair("fullPath", path);
+							}
+						}
+						System.out.println(declaration.toString());
+					}
+					super.visit(declaration, context);
+				}
+
+			}, context);
+
+			System.out.println(cUnit.toString());
+
+		}
+
+	}
+
+}
+```
