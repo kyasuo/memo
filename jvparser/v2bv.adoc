@@ -2,20 +2,55 @@
 ```
 public class BeanValidationConverter {
 
+	static final String VD_BASE = "";
 	static final String[] FILES = {};
 	static final List<String> TARGETS = Arrays.asList("NotNull");
 	static final String ENCODING = "UTF-8";
+
+	private static Map<String, String> parseValidationXml() throws DocumentException {
+		final Map<String, String> result = new HashMap<String, String>();
+		SAXReader reader = new SAXReader();
+		Document doc;
+		Element elm;
+		for (File file : FileUtils.listFiles(new File(VD_BASE), new IOFileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return this.accept(file, file.getName());
+			}
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return (name.startsWith("validation") && name.endsWith(".xml"));
+			}
+
+		}, FileFilterUtils.trueFileFilter())) {
+			doc = reader.read(file);
+			for (Node n : doc.selectNodes("//form")) {
+				elm = (Element) n;
+				String name = elm.attributeValue("name"); // convert to groups
+				for (Element celm : elm.elements()) {
+					String property = celm.attributeValue("property");
+					String depends = celm.attributeValue("depends"); // convert to annotation name
+					result.put(genKey(name, property, depends), property);
+				}
+			}
+		}
+		return result;
+	}
+
+	private static String genKey(String name, String property, String depends) {
+		if (property.contains(".")) {
+			return name + "_" + property.substring(property.lastIndexOf(".")) + "_" + depends;
+		} else {
+			return name + "_" + property + "_" + depends;
+		}
+	}
 
 	public static void main(String[] args) throws Exception {
 
 		for (String inputFile : FILES) {
 
-			// TODO parse validation.xml
-			Map<String, String> context = new HashMap<String, String>();
-			context.put("PATH01.class", "zzzz.xx.efg");
-			context.put("PATH02.class", "dddd.xx.abc");
-			
-			
+			Map<String, String> context = parseValidationXml();
 			String fileContents = FileUtils.readFileToString(new File(inputFile), ENCODING);
 			CompilationUnit cUnit = JavaParser.parse(fileContents);
 			cUnit.accept(new VoidVisitorAdapter<Map<String, String>>() {
@@ -24,6 +59,7 @@ public class BeanValidationConverter {
 				public void visit(FieldDeclaration declaration, Map<String, String> context) {
 
 					if (!declaration.isStatic()) {
+						String property = declaration.getVariable(0).getNameAsString();
 						for (AnnotationExpr a : declaration.getAnnotations()) {
 							if (!a.isSingleMemberAnnotationExpr()) {
 								continue;
@@ -33,18 +69,18 @@ public class BeanValidationConverter {
 							if (!sa.getMemberValue().isArrayInitializerExpr()) {
 								continue;
 							}
-							// TODO filter by annotation name
-							// TODO convert annotion name to depends
-							String depends = null;
 							ArrayInitializerExpr ai = (ArrayInitializerExpr) sa.getMemberValue();
 							for (Object v : ai.getValues()) {
 								NormalAnnotationExpr n = (NormalAnnotationExpr) v;
+								String depends = n.getNameAsString();
 								String path = null;
 								String fullPath = null;
 								for (MemberValuePair p : n.getPairs()) {
 									String name = p.getNameAsString();
 									if ("groups".equals(name)) {
-										path = context.get(p.getValue().toString().replace("{","").replace("}", "").trim());
+										path = context.get(
+										        genKey(p.getValue().toString().replace("{", "").replace("}", "").trim(),
+										                property, depends));
 									} else if ("fullPath".equals(name)) {
 										fullPath = p.getValue().asStringLiteralExpr().asString();
 										break;
@@ -56,7 +92,6 @@ public class BeanValidationConverter {
 								n.addPair("fullPath", path);
 							}
 						}
-						System.out.println(declaration.toString());
 					}
 					super.visit(declaration, context);
 				}
