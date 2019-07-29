@@ -1,0 +1,9 @@
+
+#### To avoid duplicate key when inserting a record
+```
+insert into table(pk_col,col1,col2,..)
+select [pk_value],[col1_value],[col2_value],...
+where not exists (select * from table where pk_col = [pk_value]
+```
+
+
