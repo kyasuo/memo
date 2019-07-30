@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation=
+       "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+		
+	<!-- トランザクションモデル別Bean定義ファイルの雛形をインポート -->
+	<import resource="classpath:template/ChunkTransactionBean.xml"/>
+
+	<!-- SqlMapConfig -->
+    <bean id="sqlMapConfigFileName" class="java.lang.String">
+	    <constructor-arg value="sqlMapConfig.xml" />
+    </bean>
+    	
+	<!-- ジョブコンテキスト -->
+	<bean id="jobContext" class="jp.terasoluna.fw.batch.openapi.JobContext" />
+				
+	<!-- コレクター定義 -->
+	<!-- ダミー -->
+	<bean id="collector" class="jp.terasoluna.fw.batch.standard.ListPropertyCollector">
+		<property name="dataList">
+			<list>
+				<bean class="java.lang.Object"></bean>
+			</list>
+		</property>
+		<property name="collectedDataHandlerFactory">
+			<bean class="jp.terasoluna.fw.batch.standard.ChunkerFactory">
+				<property name="chunkSize" value="1"/>
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- ビジネスロジック -->
+	<bean id="blogic" class="DBTestBLogic">
+        <constructor-arg index="0" ref="queryDAO"/>
+        <constructor-arg index="1" ref="updateDAO"/>
+    </bean>
+
+	
+</beans>
