@@ -1,0 +1,47 @@
+
+
+#### Find clearForm paths
+```
+import java.io.File;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.dom4j.Document;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
+
+public class PathFinder {
+
+	static final File WEBINF = new File("");
+	static final String XPATH = "//action/set-property[@property='clearForm' and @value='true']";
+
+	public static void main(String[] args) throws Exception {
+
+		final Map<String, Set<String>> resultMap = new TreeMap<String, Set<String>>();
+		final SAXReader reader = new SAXReader();
+		for (File file : FileUtils.listFiles(WEBINF, FileFilterUtils.and(FileFilterUtils.prefixFileFilter("struts-"),
+		        FileFilterUtils.suffixFileFilter(".xml")), FileFilterUtils.trueFileFilter())) {
+			if (!resultMap.containsKey(file.getName())) {
+				resultMap.put(file.getName(), new TreeSet<String>());
+			}
+			Document doc = reader.read(file);
+			for (Node node : doc.selectNodes(XPATH)) {
+				resultMap.get(file.getName()).add(node.getParent().attribute("path").getValue());
+			}
+		}
+		for (Entry<String, Set<String>> result : resultMap.entrySet()) {
+			for (String value : result.getValue()) {
+				System.out.println(result.getKey() + "\t" + value);
+			}
+		}
+
+	}
+
+}
+
+```
