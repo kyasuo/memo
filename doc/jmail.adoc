@@ -1,0 +1,21 @@
+
+#### tcpdump
+ $> tcpdump -n -s 0 -i [ethXX] -w /tmp/tcpdump.log port 110
+
+#### dovecot logging
+```
+ auth_verbose=yes
+ auth_debug=yes
+ auth_debug_passwords=yes
+ mail_debug=yes
+```
+
+#### mail_max_userip_connections
+ * https://www.ipentec.com/document/linux-dovecot-often-access-error
+ * http://www.gourd.jp/2013/01/dovecot.php
+
+#### index cache
+ * https://dovecot.org/pipermail/dovecot/2017-October/109805.html
+
+
+
