@@ -20,5 +20,6 @@
 #### index cache
  * https://dovecot.org/pipermail/dovecot/2017-October/109805.html
 
-
+#### properties
+ * https://www.atmarkit.co.jp/bbs/phpBB/viewtopic.php?topic=43188&forum=12
 
