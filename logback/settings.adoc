@@ -1,0 +1,13 @@
+
+### web.xml
+
+* disable LogbackServletContainerInitializer and set LogbackServletContextListener explicitly in web.xml
+```
+  <listener>
+    <listener-class>ch.qos.logback.classic.servlet.LogbackServletContextListener</listener-class>
+  </listener>
+  <context-param>
+    <param-name>logbackDisableServletContainerInitializer</param-name>
+    <param-value>true</param-value>
+  </context-param>
+```
