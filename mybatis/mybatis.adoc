@@ -1,0 +1,22 @@
+
+```
+cursor or cursorIterator
+ rsw: ResultSetWrapper
+  resultSet: PgResultSet
+   rows: ArrayList<E> <- size (fetchSize)
+```
+
+```
+	Object target = invocation.getTarget();
+	if (target instanceof CachingExecutor) {
+		Field delegateField = CachingExecutor.class.getDeclaredField("delegate");
+		delegateField.setAccessible(true);
+		Object delegate = delegateField.get(target);
+		if (delegate instanceof BatchExecutor) {
+			Field currentStatementField = BatchExecutor.class.getDeclaredField("currentStatement");
+			currentStatementField.setAccessible(true);
+			MappedStatement ms = (MappedStatement) currentStatementField.get(delegate);
+			ms.getId(); // get sqlid
+		}
+	}
+```
