@@ -15,6 +15,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.ImportDeclaration;
+import com.github.javaparser.ast.PackageDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
@@ -27,6 +28,8 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 public class CopyProperiesSearcher {
 
 	private static final Charset ENCODING = StandardCharsets.UTF_8;
+
+	private static final File RESULT = new File("C:/dev/den/workspace/migrateLogic/result.txt");
 
 	public static class Context {
 		private final Set<String> typeSet = new HashSet<String>();
@@ -52,7 +55,7 @@ public class CopyProperiesSearcher {
 	}
 
 	public static void main(String[] args) throws Exception {
-
+		final Set<String> lines = new HashSet<String>();
 		for (String arg : args) {
 			File inputDir = new File(arg);
 			for (File inputFile : FileUtils.listFiles(inputDir, FileFilterUtils.suffixFileFilter(".java"),
@@ -64,9 +67,25 @@ public class CopyProperiesSearcher {
 					private final String TARGET_METHOD = "copyProperties";
 					private final List<String> TARGET_CLASSES = Arrays
 					        .asList(new String[] { "BeanUtils", "org.apache.commons.beanutils.BeanUtils" });
+
+					private final List<String> JAVA_LANG_CLASSES = Arrays.asList(new String[] { "Boolean", "Byte",
+					        "Character", "Class", "ClassLoader", "ClassValue", "Compiler", "Double", "Enum", "Float",
+					        "InheritableThreadLocal", "Integer", "Long", "Math", "Number", "Object", "Package",
+					        "Process", "ProcessBuilder", "ProcessBuilder", "Runtime", "RuntimePermission",
+					        "SecurityManager", "Short", "StackTraceElement", "StrictMath", "String", "StringBuffer",
+					        "StringBuilder", "System", "Thread", "ThreadGroup", "ThreadLocal", "Throwable", "Void" });
+
 					private final Map<String, String> classMap = new HashMap<String, String>();
 
 					private final Map<String, String> fieldMap = new HashMap<String, String>();
+
+					private String packageName;
+
+					@Override
+					public void visit(PackageDeclaration n, Context arg) {
+						this.packageName = n.getNameAsString().trim();
+						super.visit(n, arg);
+					}
 
 					@Override
 					public void visit(ImportDeclaration n, Context arg) {
@@ -89,7 +108,13 @@ public class CopyProperiesSearcher {
 									if (classMap.containsKey(clssName)) {
 										arg.addType(classMap.get(clssName));
 									} else {
-										arg.addType(clssName);
+										if (JAVA_LANG_CLASSES.contains(clssName)) {
+											arg.addType("java.lang." + clssName);
+										} else if (packageName != null && !"".equals(packageName)) {
+											arg.addType(packageName + "." + clssName);
+										} else {
+											arg.addType(clssName);
+										}
 									}
 								} else {
 									System.err.println("[" + arg.getInputFile()
@@ -137,9 +162,12 @@ public class CopyProperiesSearcher {
 
 				}, context);
 
-				System.out.println(inputFile.getName() + "=" + context);
+				for (String line : context.getTypeSet()) {
+					lines.add(inputFile.getAbsolutePath() + "," + inputFile.getName() + "," + line);
+				}
 			}
 		}
+		FileUtils.writeLines(RESULT, lines);
 	}
 
 }
