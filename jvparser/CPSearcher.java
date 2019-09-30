@@ -25,11 +25,11 @@ import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ForEachStmt;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-public class CopyProperiesSearcher {
+public class CPSearcher {
 
 	private static final Charset ENCODING = StandardCharsets.UTF_8;
 
-	private static final File RESULT = new File("C:/dev/den/workspace/migrateLogic/result.txt");
+	private static final File RESULT = new File("C:/tmp/result.txt");
 
 	public static class Context {
 		private final Set<String> typeSet = new HashSet<String>();
