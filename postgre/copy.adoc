@@ -1,5 +1,5 @@
 
-
+## Interpreter
 1. Connect to the database
 
   $> psql -U [user] -p [port] [database]
@@ -15,3 +15,18 @@
 1. Commit trunsaction
 
   [database]=# COMMIT;
+
+## Batch
+
+1. Make sql file(ex: all_copy.sql)
+
+  BEGIN;
+  COPY [table] FROM '/xxx/xxx/xxx/table.csv' WITH ENCODING 'SJIS' CSV;
+  COPY [table] FROM '/xxx/xxx/xxx/table.csv' WITH ENCODING 'SJIS' CSV;
+  ...
+  COPY [table] FROM '/xxx/xxx/xxx/table.csv' WITH ENCODING 'SJIS' CSV;
+  COMMIT;
+
+1. Execute sql
+
+  $> psql -U [user] -p [port] -f all_copy.sql [database]
