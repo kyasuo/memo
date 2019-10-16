@@ -1,0 +1,17 @@
+
+
+1. Connect to the database
+
+  $> psql -U [user] -p [port] [database]
+
+1. Begin trunsaction
+
+  [database]=# BEGIN;
+
+1. Execute COPY commands
+
+  [database]=# COPY [table] FROM '/xxx/xxx/xxx/table.csv' WITH ENCODING 'SJIS' CSV;
+  
+1. Commit trunsaction
+
+  [database]=# COMMIT;
