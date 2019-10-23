@@ -1,0 +1,7 @@
+
+
+#### ThreadPoolTaskExecutor
+ * https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/concurrent/ExecutorConfigurationSupport.html#setWaitForTasksToCompleteOnShutdown-boolean-
+   - waitForTasksToCompleteOnShutdown:true
+   - awaitTerminationSeconds:int(>0)
+
