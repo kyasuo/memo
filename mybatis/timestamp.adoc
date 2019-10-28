@@ -1,0 +1,12 @@
+
+#### for index scan
+```
+OK)
+  WHERE to_timestamp('xxxxxxxx', 'YYYYMMDD') > update_time
+NG)
+  WHERE 'xxxxxxxx' > to_char(update_time, 'YYYYMMDD')
+```
+
+
+
+
