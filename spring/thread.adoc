@@ -5,3 +5,20 @@
    - waitForTasksToCompleteOnShutdown:true
    - awaitTerminationSeconds:int(>0)
 
+#### wait
+```
+		for (Thread t : threadList) {
+			futureList.add(threadPoolTaskExecutor.submit(t));
+		}
+
+		try {
+			for (Future f : futureList) {
+				while (!f.isDone()) {
+					Thread.sleep(1000);
+				}
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+```
+
