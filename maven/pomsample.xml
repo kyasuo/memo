@@ -8,7 +8,8 @@
 
 	<properties>
 		<!-- application settings -->
-		<output.dir>${project.basedir}/dist/${maven.build.timestamp}</output.dir>
+		<output.dir>${project.basedir}/dist/${build.timestamp}</output.dir>
+		<build.timestamp>${maven.build.timestamp}</build.timestamp>
 		<maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
 
 		<!-- java settings -->
@@ -21,6 +22,7 @@
 		<maven-jar-plugin.version>3.1.2</maven-jar-plugin.version>
 		<maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
 		<maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+		<maven-assembly-plugin.version>3.2.0</maven-assembly-plugin.version>
 	</properties>
 
 	<build>
@@ -51,6 +53,11 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>${maven-clean-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>${maven-assembly-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -131,6 +138,24 @@
 						</fileset>
 					</filesets>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>${project.basedir}/assembly.xml</descriptor>
+					</descriptors>
+					<outputDirectory>dist/</outputDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
