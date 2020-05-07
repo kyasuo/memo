@@ -1,0 +1,4 @@
+
+```
+$> dir /a-d /b /s [dir path] |sort
+```
