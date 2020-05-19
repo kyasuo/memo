@@ -1,0 +1,27 @@
+
+
+1. Create parent project based on FW5
+
+2. Modify parent pom
+ packaging: war -> pom
+ modules: add sub projects
+
+3. Create sub-projects
+
+```
+	<parent>
+		<groupId>com.example</groupId>
+		<artifactId>sub1</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.example</groupId>
+			<artifactId>sub0</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+```
+
