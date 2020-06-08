@@ -1,0 +1,43 @@
+### Git flow
+
+1. Create issue
+
+1. Create branch to solve the issue
+
+    $> git checkout master
+    $> git pull
+    $> git checkout -b issues/NN_xxxxx
+
+1. Modify source file(s)
+
+1. Commit to local repository
+
+    $> git status
+    $> git add -A
+    $> git status
+    $> git commit -m 'modify ...... #NN'
+
+
+1. Push the issue branch to remote repository
+
+    $> git push origin issues/NN_xxxxx
+
+1. Create pull/req and request review
+
+  Try again from "Modify source file(s)" if there are some problems by review.
+
+1. Merge the pull/req to master and close issue
+
+1. Remove unrequited branch
+
+    $> git checkout master
+    $> git pull
+    $> git branch -d issues/NN_xxxxx
+    $> git branch -l
+
+### Git practice
+
+1. Add your profile file (Name)
+
+1. Change your profile (Favorite)
+
