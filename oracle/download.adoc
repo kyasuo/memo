@@ -1,0 +1,8 @@
+
+### Get installer file
+
+1. Sign in Oracle.com
+2. Download XE
+  https://www.oracle.com/database/technologies/xe-prior-release-downloads.html
+
+
