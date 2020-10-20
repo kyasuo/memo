@@ -3,3 +3,31 @@
 * Eclipse Oxygen(4.7-) https://www.eclipse.org/downloads/packages/release/oxygen/3a
 * https://download.eclipse.org/sapphire/9.1.1/
 * https://projects.eclipse.org/projects/webtools.glassfish-tools/downloads
+* Install glassfish
+
+ a) Download glassfish-3.1.2.2-ml.zip
+   https://download.oracle.com/glassfish/3.1.2.2/release/index.html
+
+  $> unzip glassfish-3.1.2.2-ml.zip
+  $> mv glassfish3 /opt/
+  $> chwon -R glassfish:glassfish /opt/glassfish3
+
+ b) Setting for firewall (4848,8080,8181,3700,7676(
+  $> firewall-cmd --add-port=XXXX/tcp --permanent
+  $> firewall-cmd --reload
+
+ c) Setting for glassfish
+  $> su - glassfish
+  $> vi .bash_profile
+   -> add to PATH
+    /opt/glassfish3/bin:/opt/glassfish3/mq/bin
+  $> exit
+  $> su - glassfish
+  $> asadmin start-domain
+  $> asadmin change-admin-password
+  $> asadmin enable-secure-admin
+  $> asadmin stop-domain
+  $> asadmin start-domain
+ 
+ d) Add jms topic/queue
+  http://xxx.xxx.xxx:4848/
