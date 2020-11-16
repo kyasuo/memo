@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <meta http-equiv="content-type" charset="utf-8">
+  </head>
+  <body>
+    <input type="file" id="files" /> <!--multiple />-->
+  </body>
+</html>
+<script>
+  var files = document.getElementById('files');
+  files.addEventListener("change", function(e) {
+    var reader = new FileReader()
+    reader.onload = function () {
+      var jsObj = JSON.parse(reader.result);
+      // processiong ...
+    }
+    reader.readAsText(e.target.files[0])
+  },false);
+</script>
