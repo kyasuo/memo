@@ -1,0 +1,218 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script type="text/javascript" src="jquery-3.5.1.min.js"></script>
+  <style type="text/css">
+    #idiv {
+        overflow:auto;
+        width:1000px;
+        height:90px;
+        padding:5px;
+        border:1px solid #000;
+        background-color:#F9F9F9;
+        color:#000;
+        font-size:12px;
+    }
+    #ititle{
+        border:1px solid #000;
+        padding:5px;
+        width:1000px;
+        font-weight:bold;
+        font-size:14px;
+        background-color:#000;
+        color:#fff;
+    }
+    #rdiv {
+        overflow:auto;
+        width:1000px;
+        height:450px;
+        padding:5px;
+        border:1px solid #000;
+        background-color:#F9F9F9;
+        color:#000;
+        font-size:12px;
+    }
+    #rtitle{
+        border:1px solid #000;
+        padding:5px;
+        width:1000px;
+        font-weight:bold;
+        font-size:14px;
+        background-color:#000;
+        color:#fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Input Area -->
+  <div>
+    <div id="ititle">入力（複数選択可）&nbsp;<input type="file" id="ifiles" multiple /></div>
+    <div id="idiv">
+      <ul id="file_list"></ul>
+    </div>
+    <div>
+      <input type="button" value="インポート" id="ibtn" />
+      <input type="button" value="クリア" id="cbtn" />
+    </div>
+  </div>
+  <!-- Result Area -->
+  <div>
+    <div id="rtitle">出力結果&nbsp;<input type="button" id="copyBtn" value="クリップボードにコピー" style="display:none;" />&nbsp;<a id="download" target="_blank" style="display:none">ファイルに保存</a></div>
+    <div id="rdiv"></div>
+  </div>
+
+  <!-- Procedure -->
+  <script>
+    var cmpDt = {};
+    function deriveNt(ymd, hms) { // ymd:"yyyy/MM/dd", hms:"hh:mm:ss"
+      var baseDt = Date.parse(ymd +" "+hms);
+      if (!cmpDt[ymd]) {
+        cmpDt[ymd] = {
+            "00:00:00":Date.parse(ymd+" 00:00:00"),
+            "00:30:00":Date.parse(ymd+" 00:30:00"),
+            "01:00:00":Date.parse(ymd+" 01:00:00"),
+            "01:30:00":Date.parse(ymd+" 01:30:00"),
+            "02:00:00":Date.parse(ymd+" 02:00:00"),
+            "02:30:00":Date.parse(ymd+" 02:30:00"),
+            "03:00:00":Date.parse(ymd+" 03:00:00"),
+            "03:30:00":Date.parse(ymd+" 03:30:00"),
+            "04:00:00":Date.parse(ymd+" 04:00:00"),
+            "04:30:00":Date.parse(ymd+" 04:30:00"),
+            "05:00:00":Date.parse(ymd+" 05:00:00"),
+            "05:30:00":Date.parse(ymd+" 05:30:00"),
+            "06:00:00":Date.parse(ymd+" 06:00:00"),
+            "06:30:00":Date.parse(ymd+" 06:30:00"),
+            "07:00:00":Date.parse(ymd+" 07:00:00"),
+            "07:30:00":Date.parse(ymd+" 07:30:00"),
+            "08:00:00":Date.parse(ymd+" 08:00:00"),
+            "08:30:00":Date.parse(ymd+" 08:30:00"),
+            "09:00:00":Date.parse(ymd+" 09:00:00"),
+            "09:30:00":Date.parse(ymd+" 09:30:00"),
+            "10:00:00":Date.parse(ymd+" 10:00:00"),
+            "10:30:00":Date.parse(ymd+" 10:30:00"),
+            "11:00:00":Date.parse(ymd+" 11:00:00"),
+            "11:30:00":Date.parse(ymd+" 11:30:00"),
+            "12:00:00":Date.parse(ymd+" 12:00:00"),
+            "12:30:00":Date.parse(ymd+" 12:30:00"),
+            "13:00:00":Date.parse(ymd+" 13:00:00"),
+            "13:30:00":Date.parse(ymd+" 13:30:00"),
+            "14:00:00":Date.parse(ymd+" 14:00:00"),
+            "14:30:00":Date.parse(ymd+" 14:30:00"),
+            "15:00:00":Date.parse(ymd+" 15:00:00"),
+            "15:30:00":Date.parse(ymd+" 15:30:00"),
+            "16:00:00":Date.parse(ymd+" 16:00:00"),
+            "16:30:00":Date.parse(ymd+" 16:30:00"),
+            "17:00:00":Date.parse(ymd+" 17:00:00"),
+            "17:30:00":Date.parse(ymd+" 17:30:00"),
+            "18:00:00":Date.parse(ymd+" 18:00:00"),
+            "18:30:00":Date.parse(ymd+" 18:30:00"),
+            "19:00:00":Date.parse(ymd+" 19:00:00"),
+            "19:30:00":Date.parse(ymd+" 19:30:00"),
+            "20:00:00":Date.parse(ymd+" 20:00:00"),
+            "20:30:00":Date.parse(ymd+" 20:30:00"),
+            "21:00:00":Date.parse(ymd+" 21:00:00"),
+            "21:30:00":Date.parse(ymd+" 21:30:00"),
+            "22:00:00":Date.parse(ymd+" 22:00:00"),
+            "22:30:00":Date.parse(ymd+" 22:30:00"),
+            "23:00:00":Date.parse(ymd+" 23:00:00"),
+            "23:30:00":Date.parse(ymd+" 23:30:00"),
+            "24:00:00":Date.parse(ymd+" 24:00:00")
+        };
+      }
+      var h = hms.substr(0,2);
+      var hms1 = h + ":00:00";
+      var hms2 = h + ":30:00";
+      var hms3 = ('00'+(parseInt(h)+1)).slice(-2) + ":00:00";
+      var ad = Math.abs(cmpDt[ymd][hms1] - baseDt); // msec
+      var nt = hms1
+      if (ad > Math.abs(cmpDt[ymd][hms2] - baseDt)) {
+        ad = Math.abs(cmpDt[ymd][hms2] - baseDt);
+        nt = hms2;
+      }
+      if (ad > Math.abs(cmpDt[ymd][hms3] - baseDt)) {
+        ad = Math.abs(cmpDt[ymd][hms3] - baseDt);
+        nt = hms3;
+      }
+      return { "neartime":nt, "absdiff":(ad/1000) };
+    }
+    function setBlobUrl(id, content) {
+      var blob = new Blob([ content ], { "type" : "application/x-msdownload" });
+      window.URL = window.URL || window.webkitURL;
+      $("#" + id).attr("href", window.URL.createObjectURL(blob));
+      $("#" + id).attr("download", getTimestamp('yyyyMMddhhmmss') + "_result.csv");
+    }
+    function getTimestamp(dtformat) {
+      var d = new Date();
+      return dtformat
+        .replace(/yyyy/g, String(d.getFullYear()))
+        .replace(/MM/g, ('0' + (d.getMonth() + 1)).slice(-2))
+        .replace(/dd/g, ('0' + d.getDate()).slice(-2))
+        .replace(/hh/g, ('0' + d.getHours()).slice(-2))
+        .replace(/mm/g, ('0' + d.getMinutes()).slice(-2))
+        .replace(/ss/g, ('0' + d.getSeconds()).slice(-2));
+    }
+    document.getElementById("ibtn").addEventListener("click", function(e){
+      var contents = "date,time,currencyPair,term,bid,ask,neartime,absdiff\r\n";
+      var files = $("#ifiles")[0].files;
+      for(var i=0; i<files.length; i++) {
+        var reader = new FileReader();
+        reader.readAsText(files[i]);
+        reader.addEventListener('load', function() {
+          var lines = this.result.split('\n');
+          var rst, gts, ymd, hms, term, cmp;
+          for(var i = 0; i < lines.length; i++){
+            if (0< lines[i].indexOf("を送信しました。")) {
+              rst = JSON.parse(lines[i].replace(/.+\[(\{.+\})\]\]/i, '$1'));
+              gts = rst.generatedTimeStamp;
+              ymd = gts.substr(0, 4)+"/"+gts.substr(4, 2)+"/"+gts.substr(6,2);
+              hms = gts.substr(8,2)+":"+gts.substr(10,2)+":"+gts.substr(12,2);
+              term = rst.term;
+              if (term == null) {
+                term = "SP";
+              }
+              cmp = deriveNt(ymd, hms);
+              $("#rdiv > table").append("<tr>"+"<td>"+ymd+"</td><td>"+hms+"</td><td>"+rst.currencyPair+"</td><td>"+term+"</td><td>"+rst.bid+"</td><td>"+rst.ask+"</td><td>"+cmp.neartime+"</td><td>"+cmp.absdiff+"</td></tr>");
+              contents = contents + ymd + "," + hms + "," + rst.currencyPair + "," + term + "," + rst.bid + "," + rst.ask + "," + cmp.neartime + "," + cmp.absdiff + "\r\n";
+            }
+          }
+        });
+      }
+      //$("#ifiles").val('');
+      //$("#file_list").empty();
+      $("#rdiv").empty();
+      if (0 < files.length) {
+        $("#rdiv").append("<table border=1><tr><td>date</td><td>time</td><td>currencyPair</td><td>term</td><td>bid</td><td>ask</td><td>neartime</td><td>absdiff</td></tr></table>");
+        setTimeout(function(e) { 
+          $("#download").attr("style", "display:inline;");
+          $("#copyBtn").attr("style", "display:inline;");
+          setBlobUrl("download", contents);
+        }, 100);
+      }
+    });
+    document.getElementById("cbtn").addEventListener("click", function(e){
+      $("#ifiles").val('');
+      $("#file_list").empty();
+      $("#rdiv").empty();
+      $("#download").attr("style", "display:none;");
+      $("#copyBtn").attr("style", "display:none;");
+    });
+    document.getElementById("ifiles").addEventListener("change", function(e){
+      $("#file_list").empty();
+      $("#rdiv").empty();
+      var files = e.target.files;
+      for(var i=0; i<files.length; i++) {
+        $("#file_list").append("<li>"+files[i].name+"</li>");
+      }
+    });
+    document.getElementById("copyBtn").addEventListener("click", function(e){
+      let $textarea = $('<textarea></textarea>');
+      $textarea.text($("#rdiv").html());
+      $("#rdiv").append($textarea);
+      $textarea.select();
+      document.execCommand('copy');
+      $textarea.remove();
+    });
+  </script>
+</body>
+</html>
