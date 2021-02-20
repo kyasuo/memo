@@ -1,0 +1,53 @@
+
+### 制約条件
+* タスクスケジューラでコマンドプロンプトを表示するbatファイル実行にはユーザがログオン状態でないとできない
+
+### 1. batファイル準備
+
+#### 1-1. 起動用(UJIDを指定しておく)
+```
+@echo off
+
+set UJID=[Unique Job ID]
+cmd /c [java.exe] -DUJID=%UJID% [Main Class]
+```
+
+#### 1-2. 停止用(UJIDでプロセスIDを特定)
+```
+@echo off
+
+set UJID=[Unique Job ID]
+set OFILE=plist_%UJID%.txt
+
+cd C:\dev\forex\tmp\iotest
+cmd /c [jps.exe] -lv |find "%UJID%" > %OFILE%
+
+for /f "tokens=1" %%t in (%OFILE%) do (
+  taskkill /f /pid %%t
+)
+
+del /Q %OFILE%
+```
+
+### 2. タスク登録
+#### 2-1. タスクスケジューラ起動
+
+```
+Ctrl+R -> taskschd.msc /s
+```
+
+#### 2-2. タスクの作成
+```
+ 操作ウィンドウ -> タスクの作成
+ 下記タブの設定変更（記載箇所以外はデフォルトのまま）
+ <全般>
+ 　名前：[起動or停止]_[Unique Job ID]
+ 　最上位の特権で実行する：チェックオン
+ <トリガー>
+ 　新規 -> 実行したい日時を設定
+ <操作>
+ 　新規 -> 実行したいプログラムを設定
+ 　　プログラム/スクリプト：手順1で作ったbatファイルパス
+ 　　引数の追加(オプション)：空白
+ 　　開始(オプション)：手順1で作ったbatファイルの格納フォルダパス　★重要★
+```
