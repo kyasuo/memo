@@ -1,0 +1,31 @@
+## Create
+* ca, server and client certification
+
+  $> create.sh
+
+## Server
+* ssl.conf
+
+  SSLCertificateFile=[server-crt.pem]
+  SSLCertificateKeyFile=[server-key.pem]
+  SSLCACertificateFile=[ca-crt.pem]
+  SSLVerifyClient require
+  SSLVerifyDepth  10
+
+## Client
+* ca
+
+  $> keytool -keystore /etc/pki/java/cacerts -import -alias testca -trustcacerts -file ./ca-crt.pem
+
+* client
+
+  $> openssl pkcs12 -export -in ./client-crt.pem -inkey ./client-key.pem -out ./client-store.pkcs12 -name testclient -noiter -nomaciter
+   -> equate pass with keystore's
+  $> keytool -keystore /etc/pki/java/cacerts -importkeystore -srckeystore ./client-store.pkcs12
+
+
+## JVM options(system properties)
+
+  -Djavax.net.debug=all
+  -Djavax.net.ssl.keyStore=/etc/pki/java/cacerts
+  -Djavax.net.ssl.keyStorePassword=[pass]
