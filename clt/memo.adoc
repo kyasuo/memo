@@ -29,3 +29,8 @@
   -Djavax.net.debug=all
   -Djavax.net.ssl.keyStore=/etc/pki/java/cacerts
   -Djavax.net.ssl.keyStorePassword=[pass]
+
+## curl
+
+  $> curl --dump-header header.log -i --key ./client-key.pem --cert ./client-crt.pem --cacert ./ca-crt.pem https://xxxxxxx
+
