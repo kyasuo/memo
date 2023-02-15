@@ -1,0 +1,14 @@
+
+
+```
+	<bean id="dbUnitDatabaseConfig" class="com.github.springtestdbunit.bean.DatabaseConfigBean">
+		<property name="allowEmptyFields" value="true" />
+		<property name="datatypeFactory">
+			<bean class="org.dbunit.ext.postgresql.PostgresqlDataTypeFactory" />
+		</property>
+	</bean>
+	<bean id="dbUnitDatabaseConnection" class="com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean">
+		<constructor-arg ref="dataSource" />
+		<property name="databaseConfig" ref="dbUnitDatabaseConfig" />
+	</bean>
+```
