@@ -1,0 +1,179 @@
+
+```
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.16.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.14.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.17.2</version>
+		</dependency>
+```
+
+```
+	private static File SW_INP = new File("");
+
+	private static final String PARAM_JSPATH = "div.operation-tag-content > span";
+	private static final String MODEL_PATH = "span.inner-object > table.model > tbody";
+
+	public static void main(String[] args) throws IOException {
+		Document doc = Jsoup.parseBodyFragment(FileUtils.readFileToString(SW_INP, StandardCharsets.UTF_8));
+
+		for (Element elem : doc.select(PARAM_JSPATH)) {
+			ParamSummary summary = parseParamSummary(elem);
+			if (summary == null) {
+				continue;
+			}
+			List<Param> paramList = parseParams(elem);
+			String response = parseResponse(elem);
+
+			System.out.println("==================================================================");
+			System.out.println(summary.getMethod() + " " + summary.getPath() + " " + summary.getDescription());
+			System.out.println("<Request>");
+			for (Param param : paramList) {
+				System.out.println(" " + param.getName() + " " + param.getIn() + " " + param.getType() + " "
+						+ param.getFormat() + " " + param.getDescription());
+			}
+			System.out.println("<Response>");
+			System.out.println(response);
+		}
+	}
+
+	private static ParamSummary parseParamSummary(Element elem) {
+		if (elem.selectFirst("span.opblock-summary-method") != null
+				&& elem.selectFirst("span.opblock-summary-path") != null
+				&& elem.select("div.opblock-summary-description") != null) {
+			return new ParamSummary(elem.selectFirst("span.opblock-summary-method").text().trim(),
+					elem.selectFirst("span.opblock-summary-path").attr("data-path").trim(),
+					elem.select("div.opblock-summary-description").text());
+		} else {
+			return null;
+		}
+	}
+
+	private static List<Param> parseParams(Element elem) {
+		final List<Param> paramList = new ArrayList<Param>();
+		for (Element tr : elem.select("table.parameters > tbody > tr")) {
+			paramList.add(new Param(tr.attr("data-param-name").trim(),
+					tr.selectFirst("div.parameter__name").attr("parameter__name").endsWith("required"),
+					tr.selectFirst("div.parameter__type").text().trim(),
+					tr.selectFirst("span.prop-format") != null ? tr.selectFirst("span.prop-format").text().trim() : "",
+					tr.attr("data-param-in").trim(), tr.selectFirst("td.parameters-col_description").text().trim()));
+		}
+		return paramList;
+	}
+
+	private static String parseResponse(Element elem) {
+		StringBuilder sb = new StringBuilder();
+		Element topModel = elem.selectFirst(MODEL_PATH);
+		parseModelRecursivly(topModel, sb, 1);
+		return sb.toString();
+	}
+
+	private static void parseModelRecursivly(Element elem, StringBuilder sb, int level) {
+		if (elem == null) {
+			return;
+		}
+		for (Element tr : elem.children()) {
+			String name = tr.select("td").get(0).text().replace("*", "").trim();
+			boolean required = tr.attr("class").endsWith("required");
+			String type = "";
+			String description = "";
+			if (tr.selectFirst(MODEL_PATH) != null) {
+				type = tr.selectFirst("span.model-title__text").text().trim();
+				sb.append(StringUtils.leftPad("", level) + name + "\t" + required + "\t" + type + "\t" + description
+						+ "\r\n");
+				parseModelRecursivly(tr.selectFirst(MODEL_PATH), sb, level + 1);
+			} else {
+				type = tr.selectFirst("span.prop-type").text().trim();
+				description = tr.selectFirst("span.prop").wholeText().replace(type, "").replaceAll("\r\n|\n", "")
+						.trim();
+				sb.append(StringUtils.leftPad("", level) + name + "\t" + required + "\t" + type + "\t" + description
+						+ "\r\n");
+			}
+		}
+	}
+
+	static class ParamSummary {
+		final String method;
+		final String path;
+		final String description;
+
+		public ParamSummary(String method, String path, String description) {
+			this.method = method;
+			this.path = path;
+			this.description = description;
+		}
+
+		public String getMethod() {
+			return method;
+		}
+
+		public String getPath() {
+			return path;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+	}
+
+	static class Param {
+		final String name;
+		final boolean required;
+		final String type;
+		final String format;
+		final String in;
+		final String description;
+
+		public Param(String name, boolean required, String type, String format, String in, String description) {
+			super();
+			this.name = name;
+			this.required = required;
+			this.type = type;
+			this.format = format;
+			this.in = in;
+			this.description = description;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public boolean isRequired() {
+			return required;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public String getFormat() {
+			return format;
+		}
+
+		public String getIn() {
+			return in;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+	}
+```
+
+```
+document.querySelectorAll("#swagger-ui section.block button.opblock-summary-control[aria-expanded=false]").forEach(btn => btn.click())
+document.querySelectorAll("#swagger-ui section.block button.tablinks[data-name=model]").forEach(btn => btn.click())
+document.querySelectorAll("#swagger-ui section.block button.model-box-control[aria-expanded=false]").forEach(btn => btn.click())
+document.querySelectorAll("#swagger-ui section.models button.model-box-control[aria-expanded=false]").forEach(btn => btn.click())
+```
